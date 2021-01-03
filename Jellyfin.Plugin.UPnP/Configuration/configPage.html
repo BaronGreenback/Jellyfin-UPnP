@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>UPnP Settings</title>
+</head>
+<body>
+    <div id="UPnPConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="TemplateConfigForm">
+                    <div class="selectContainer">
+                        <div class="inputContainer">
+                            <div class="checkboxLabel">Current Status: <span class="fieldDescription" id="Status"></span></div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <input is="emby-input" id="GatewayMonitorPeriod" name="GatewayMonitorPeriod" type="number" min="1" max="65535" label="Gateway Monitoring Interval (secs)" />
+                            <div class="fieldDescription">The interval, in seconds, between pings of the gateway. On recovery, UPnp rules will be automatically added to the router.</div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <input is="emby-input" id="HttpsDestPort" name="HttpsDestPort" type="number" min="1" max="65535" label="Https Port on the router." />
+                            <div class="fieldDescription">The external facing https port on the router to forward to jellyfin.</div>
+                        </div>
+
+                        <div class="inputContainer">
+                            <input is="emby-input" id="HttpDestPort" name="HttpDestPort" type="number" min="1" max="65535" label="Http Port on the router." />
+                            <div class="fieldDescription">The external facing http port on the router to forward to jellyfin. If Enable Http port forwarding is enabled, this value will be ignored.</div>
+                        </div>
+
+                        <div class="checkboxContainer checkboxContainer-withDescripton">
+                            <label class="emby-checkbox-label">
+                                <input id="CreateHttpPortMap" name="CreateHttpPortMap" type="checkbox" is="emby-checkbox" class="emby-checkbox" />
+                                <span class="checkboxLabel">Enable Http port forwarding</span>
+                                <span class="checkboxOutline"><span class="material-icons checkboxIcon checkboxIcon-checked check"></span><span class="material-icons checkboxIcon checkboxIcon-unchecked "></span></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">When checked, http port forwarding rules will be added to the router.</div>
+                        </div>
+                        <div class="checkboxContainer checkboxContainer-withDescripton">
+                            <label class="emby-checkbox-label">
+                                <input id="CreateHttpsPortMap" name="CreateHttpsPortMap" type="checkbox" is="emby-checkbox" class="emby-checkbox" />
+                                <span class="checkboxLabel">Enable Https port forwarding</span>
+                                <span class="checkboxOutline"><span class="material-icons checkboxIcon checkboxIcon-checked check"></span><span class="material-icons checkboxIcon checkboxIcon-unchecked "></span></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">When checked, https port forwarding rules will be added to the router.</div>
+                        </div>
+
+                        <div class="checkboxContainer checkboxContainer-withDescripton">
+                            <label class="emby-checkbox-label">
+                                <input id="DebugLogging" name="DebugLogging" type="checkbox" is="emby-checkbox" class="emby-checkbox" />
+                                <span class="checkboxLabel">Enable UPnP Debug Logging</span>
+                                <span class="checkboxOutline"><span class="material-icons checkboxIcon checkboxIcon-checked check"></span><span class="material-icons checkboxIcon checkboxIcon-unchecked "></span></span>
+                            </label>
+                            <div class="fieldDescription checkboxFieldDescription">Log all UPnP packets. This options will create extremely large log files very quickly, and should only be used as needed for troubleshooting purposes.</div>
+                        </div>
+
+                        <div>
+                            <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                                <span>Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var TemplateConfig = {
+                pluginUniqueId: '22e800c8-ea1f-4cb3-9ba3-b5623a02d2b5'
+            };
+
+            document.querySelector('#UPnPConfigPage')
+                .addEventListener('pageshow', function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
+                        document.querySelector('#DebugLogging').checked = config.EnableDebugLog;
+                        document.querySelector('#CreateHttpPortMap').checked = config.CreateHttpPortMap;
+                        document.querySelector('#CreateHttpsPortMap').checked = config.CreateHttpsPortMap;
+                        document.querySelector('#GatewayMonitorPeriod').value = config.GatewayMonitorPeriod;
+                        document.querySelector('#HttpDestPort').value = config.HttpDestPort;
+                        document.querySelector('#HttpsDestPort').value = config.HttpsDestPort;
+                        $('#Status').html(config.Status);
+                        Dashboard.hideLoadingMsg();
+                    });
+                });
+
+            document.querySelector('#UPnPConfigPage')
+                .addEventListener('submit', function (e) {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
+                        config.DebugLogging = document.querySelector('#DebugLogging').checked;
+                        config.CreateHttpPortMap = document.querySelector('#CreateHttpPortMap').checked;
+                        config.CreateHttpsPortMap = document.querySelector('#CreateHttpsPortMap').checked;
+                        config.GatewayMonitorPeriod = document.querySelector('#GatewayMonitorPeriod').value;
+                        config.HttpDestPort = document.querySelector('#HttpDestPort').value;
+                        config.HttpsDestPort = document.querySelector('#HttpsDestPort').value;
+                        ApiClient.updatePluginConfiguration(TemplateConfig.pluginUniqueId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                            Dashboard.hideLoadingMsg();
+                        });
+                    });
+
+                    e.preventDefault();
+                    return false;
+                });
+        </script>
+    </div>
+</body>
+</html>

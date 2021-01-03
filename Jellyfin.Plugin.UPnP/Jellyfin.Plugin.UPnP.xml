@@ -1,0 +1,359 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Jellyfin.Plugin.UPnP</name>
+    </assembly>
+    <members>
+        <member name="T:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration">
+            <summary>
+            Defines the <see cref="T:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration" />.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.GatewayMonitorPeriod">
+            <summary>
+            Gets or sets the time (in seconds) between the pings of SSDP gateway monitor.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.HttpDestPort">
+            <summary>
+            Gets or sets the public mapped port.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.HttpsDestPort">
+            <summary>
+            Gets or sets the public mapped port.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.UPnPCreateHttpPortMap">
+            <summary>
+            Gets or sets a value indicating whether the http port should be mapped as part of UPnP automatic port forwarding.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.DebugLogging">
+            <summary>
+            Gets or sets a value indicating whether mono.log logging is enabled.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Configuration.UPnPConfiguration.Status">
+            <summary>
+            Gets or sets the status of UPnP.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.UPnP.Gateway.GatewayEventArgs">
+            <summary>
+            EventArgs class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayEventArgs.#ctor(System.Net.IPAddress,System.Net.NetworkInformation.IPStatus)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.UPnP.Gateway.GatewayEventArgs"/> class.
+            </summary>
+            <param name="gateway">Gateway address.</param>
+            <param name="status">Status of the ping.</param>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Gateway.GatewayEventArgs.Status">
+            <summary>
+            Gets the status.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Gateway.GatewayEventArgs.Gateway">
+            <summary>
+            Gets the gateway.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor">
+            <summary>
+            Singleton that periodically checks the state of the internet.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor._logger">
+            <summary>
+            Logger.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor._gwAddress">
+            <summary>
+            List of IPAddresses to monitor.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor._pinger">
+            <summary>
+            Timer object.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor._disposed">
+            <summary>
+            Set if disposed.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor._active">
+            <summary>
+            Set if the internet resolver is running.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.#ctor(Microsoft.Extensions.Logging.ILogger,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor"/> class.
+            Constructor for InternetChecker.
+            </summary>
+            <param name="logger">An <see cref="T:Microsoft.Extensions.Logging.ILogger"/> instance.</param>
+            <param name="period">Gateway Monitor Period in seconds.</param>
+        </member>
+        <member name="E:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.OnGatewayFailure">
+            <summary>
+            Event that gets called every time a ping to the gateway fails.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.GatewayMonitorPeriod">
+            <summary>
+            Gets or sets the gateway monitoring period.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.AddGateway(System.Net.IPAddress)">
+            <summary>
+            Adds a gateway for monitoring.
+            </summary>
+            <param name="gwAddress">IP Address to monitor.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.ResetGateways">
+            <summary>
+            Clears all the gateways.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="dispose"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.IsPingable(System.Net.IPAddress)">
+            <summary>
+            Returns true if the ip address provided responds to a ping.
+            </summary>
+            <param name="gwAddress">IP address to check.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.CheckRouterStatus(System.Object)">
+            <summary>
+            Timer handler to check the status of inbound traffic.
+            </summary>
+            <param name="state">Timer state.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.GatewayMonitor.CheckRouter">
+            <summary>
+            Checks the status of the firewalls in the list.
+            </summary>
+            <returns>Task.</returns>
+        </member>
+        <member name="T:Jellyfin.Plugin.UPnP.Gateway.IGatewayMonitor">
+            <summary>
+            Interface for GatewayMonitor.
+            </summary>
+        </member>
+        <member name="E:Jellyfin.Plugin.UPnP.Gateway.IGatewayMonitor.OnGatewayFailure">
+            <summary>
+            Event that gets called every time a ping to the gateway fails.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.Gateway.IGatewayMonitor.GatewayMonitorPeriod">
+            <summary>
+            Gets or sets the gateway monitoring period.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.IGatewayMonitor.AddGateway(System.Net.IPAddress)">
+            <summary>
+            Adds a gateway for monitoring.
+            </summary>
+            <param name="gwAddress">IP Address to monitor.</param>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the asynchronous operation.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.Gateway.IGatewayMonitor.ResetGateways">
+            <summary>
+            Clears all the gateways.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Plugin.UPnP.UPnPPlugin">
+            <summary>
+            Defines the <see cref="T:Jellyfin.Plugin.UPnP.UPnPPlugin" />.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.#ctor(MediaBrowser.Common.Configuration.IApplicationPaths,MediaBrowser.Model.Serialization.IXmlSerializer,MediaBrowser.Controller.IServerApplicationHost,MediaBrowser.Controller.Configuration.IServerConfigurationManager,MediaBrowser.Common.Net.INetworkManager,Microsoft.Extensions.Logging.ILogger{Jellyfin.Plugin.UPnP.UPnPPlugin})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.UPnP.UPnPPlugin"/> class.
+            </summary>
+            <param name="applicationPaths">The <see cref="T:MediaBrowser.Common.Configuration.IApplicationPaths"/>.</param>
+            <param name="xmlSerializer">The <see cref="T:MediaBrowser.Model.Serialization.IXmlSerializer"/>.</param>
+            <param name="appHost">The <see cref="T:MediaBrowser.Controller.IServerApplicationHost"/>.</param>
+            <param name="config">The <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/>.</param>
+            <param name="networkManager">The <see cref="T:MediaBrowser.Common.Net.INetworkManager"/>.</param>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger`1"/>.</param>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.UPnPPlugin.Instance">
+            <summary>
+            Gets the Instance, nullable style.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.UPnPPlugin.Name">
+            <summary>
+            Gets the name of the plugin.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.UPnPPlugin.Id">
+            <summary>
+            Gets the plugin id.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Plugin.UPnP.UPnPPlugin.IsUPnPActive">
+            <summary>
+            Gets a value indicating whether uPnP is active.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.GetPages">
+            <summary>
+            Gets the configuration page.
+            </summary>
+            <returns>The <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.Dispose">
+            <summary>
+            Dispose method.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.UpdateConfiguration(MediaBrowser.Model.Plugins.BasePluginConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.GetInstance">
+            <summary>
+            Returns the static instance.
+            </summary>
+            <returns>The <see cref="T:Jellyfin.Plugin.UPnP.UPnPPlugin"/>.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.GetLogger(System.String)">
+            <summary>
+            Creates a logging instance for Mono.NAT.
+            </summary>
+            <param name="name">Name of instance.</param>
+            <returns>ILogger implementation.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.GetConfigIdentifier">
+            <summary>
+            Converts the uPNP settings to a string.
+            </summary>
+            <returns>String representation of the settings.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.OnSystemConfigurationUpdated(System.Object,MediaBrowser.Common.Configuration.ConfigurationUpdateEventArgs)">
+            <summary>
+            Triggered when the network configuration is updated.
+            </summary>
+            <param name="sender">Owner of the event.</param>
+            <param name="e">Event parameters.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.Start">
+            <summary>
+            Class to provide an interface between ILogger and NATLogger.
+            </summary>
+            <summary>
+            Starts the discovery.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.OnNetworkChange(System.Object,System.EventArgs)">
+            <summary>
+            Triggered when there is a change in the network.
+            </summary>
+            <param name="sender">INetworkManager object.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.Stop(System.Boolean)">
+            <summary>
+            Stops discovery, and releases resources.
+            </summary>
+            <param name="stopMonitoring">Dispose of the Gateway Monitor?.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.KnownDeviceFound(System.Object,Mono.Nat.DeviceEventArgs)">
+            <summary>
+            Triggered when a device is found.
+            </summary>
+            <param name="sender">Objects triggering the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.CreateRules(Mono.Nat.INatDevice)">
+            <summary>
+            Creates rules on a device.
+            </summary>
+            <param name="device">Destination device.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.CreatePortMaps(Mono.Nat.INatDevice)">
+            <summary>
+            Attempts to create port mappings on a device.
+            </summary>
+            <param name="device">Destination device.</param>
+            <returns>IEnumerable.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.CreatePortMap(Mono.Nat.INatDevice,System.Int32,System.Int32)">
+            <summary>
+            Attempts to add a port mapping.
+            </summary>
+            <param name="device">Destination device.</param>
+            <param name="privatePort">Private port number.</param>
+            <param name="publicPort">Public port number.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.RemoveRules(Mono.Nat.INatDevice)">
+            <summary>
+            Attempts to removes rules from a device.
+            </summary>
+            <param name="device">Destination device.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.RemovePortMaps(Mono.Nat.INatDevice)">
+            <summary>
+            Attempts to remove port mappings from a device.
+            </summary>
+            <param name="device">Destination device.</param>
+            <returns>IEnumerable.</returns>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.RemovePortMap(Mono.Nat.INatDevice,System.Int32,System.Int32)">
+            <summary>
+            Attempts to remove a port mapping.
+            </summary>
+            <param name="device">Destination device.</param>
+            <param name="privatePort">Private port number.</param>
+            <param name="publicPort">Public port number.</param>
+            <returns>Task.</returns>
+        </member>
+        <member name="T:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface">
+            <summary>
+            Interface class that transpose Mono.NAT logs into our logging system.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface"/> class.
+            </summary>
+            <param name="logger">ILogger instance to use.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface.Info(System.String)">
+            <summary>
+            The Info.
+            </summary>
+            <param name="message">The message<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface.Debug(System.String)">
+            <summary>
+            The Debug.
+            </summary>
+            <param name="message">The message<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Jellyfin.Plugin.UPnP.UPnPPlugin.LoggingInterface.Error(System.String)">
+            <summary>
+            The Error.
+            </summary>
+            <param name="message">The message<see cref="T:System.String"/>.</param>
+        </member>
+    </members>
+</doc>
